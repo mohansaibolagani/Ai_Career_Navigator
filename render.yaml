@@ -40,6 +40,7 @@ services:
         sync: false
       - key: UPSTASH_REDIS_REST_TOKEN
         sync: false
-      # Without Upstash, storage lives on the instance disk (resets on restart):
+      # Without Upstash, storage lives on the instance disk (resets on restart).
+      # /tmp is always writable on Render instances.
       - key: DATA_DIR
-        value: /var/data
+        value: /tmp/acn-data
