@@ -1,0 +1,6 @@
+.env.local
+.env
+data/
+.freebuff/
+.vercel/
+vercel.json.bak
