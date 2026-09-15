@@ -48,7 +48,8 @@ export default function SignupPage() {
           </div>
           <div>
             <label className="label">Email</label>
-            <input className="input mt-1" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@college.edu" />
+            <input className="input mt-1" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+            <p className="text-[11px] muted mt-1">Any email domain works — Gmail, Outlook, or your college ID.</p>
           </div>
           <div>
             <label className="label">Password</label>

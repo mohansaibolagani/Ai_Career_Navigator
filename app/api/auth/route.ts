@@ -35,7 +35,13 @@ export async function POST(req: NextRequest) {
       if (String(password).length < 6) {
         return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
       }
-      const user = await createUser(String(email), String(name), String(password));
+      // Accept ANY email domain (Gmail, Outlook, college IDs, ...) — only reject
+      // clearly malformed input like "foo@bar" or "foo @x.com".
+      const emailStr = String(email).trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) {
+        return NextResponse.json({ error: "Please enter a valid email address (any domain is accepted)" }, { status: 400 });
+      }
+      const user = await createUser(emailStr, String(name).trim(), String(password));
       const token = await createSession(user.id);
       const res = NextResponse.json({ user: { id: user.id, email: user.email, name: user.name, profile: user.profile } });
       res.cookies.set(COOKIE, token, { httpOnly: true, sameSite: "lax", path: "/" });
