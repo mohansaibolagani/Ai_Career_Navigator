@@ -6,7 +6,7 @@ import { CAREERS } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const user = resolveSession(req.cookies.get("acn_session")?.value);
+  const user = await resolveSession(req.cookies.get("acn_session")?.value);
   if (!user || !user.profile) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
 /** Select target career */
 export async function POST(req: NextRequest) {
-  const user = resolveSession(req.cookies.get("acn_session")?.value);
+  const user = await resolveSession(req.cookies.get("acn_session")?.value);
   if (!user || !user.profile) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -30,6 +30,6 @@ export async function POST(req: NextRequest) {
   if (!CAREERS.some((c) => c.id === careerId)) {
     return NextResponse.json({ error: "Unknown career" }, { status: 400 });
   }
-  updateProfile(user.id, { ...user.profile, targetCareerId: careerId });
+  await updateProfile(user.id, { ...user.profile, targetCareerId: careerId });
   return NextResponse.json({ ok: true, targetCareerId: careerId });
 }

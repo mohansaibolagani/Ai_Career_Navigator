@@ -24,15 +24,15 @@ export async function GET(req: NextRequest) {
     if (!googleDemoConfigured()) return fail("google_demo_not_configured");
     const email = process.env.GOOGLE_DEMO_EMAIL!;
     const name = process.env.GOOGLE_DEMO_NAME ?? email.split("@")[0];
-    let user = verifyUser(email, "demo1234");
+    let user = await verifyUser(email, "demo1234");
     if (!user || user.provider !== "google") {
-      user = upsertOAuthUser(email, name);
+      user = await upsertOAuthUser(email, name);
     }
     if (!user.profile && process.env.GOOGLE_DEMO_SEED_PROFILE === "1") {
-      updateProfile(user.id, buildDemoProfile());
-      user = upsertOAuthUser(email, name);
+      await updateProfile(user.id, buildDemoProfile());
+      user = await upsertOAuthUser(email, name);
     }
-    const token = createSession(user.id);
+    const token = await createSession(user.id);
     const res = NextResponse.redirect(`${origin}/dashboard`);
     res.cookies.set(COOKIE, token, { httpOnly: true, sameSite: "lax", path: "/" });
     return res;
@@ -49,8 +49,8 @@ export async function GET(req: NextRequest) {
     const redirectUri =
       process.env.GOOGLE_REDIRECT_URI ?? `${origin}/api/auth/google/callback`;
     const profile = await exchangeGoogleCode(code, redirectUri);
-    const user = upsertOAuthUser(profile.email, profile.name);
-    const token = createSession(user.id);
+    const user = await upsertOAuthUser(profile.email, profile.name);
+    const token = await createSession(user.id);
     const res = NextResponse.redirect(
       user.profile ? `${origin}/dashboard` : `${origin}/onboarding`
     );

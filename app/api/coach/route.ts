@@ -8,7 +8,7 @@ import type { ChatMessage } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const user = resolveSession(req.cookies.get("acn_session")?.value);
+  const user = await resolveSession(req.cookies.get("acn_session")?.value);
   if (!user || !user.profile) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -5,13 +5,13 @@ import type { StudentProfile } from "@/lib/types";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const user = resolveSession(req.cookies.get("acn_session")?.value);
+  const user = await resolveSession(req.cookies.get("acn_session")?.value);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json({ profile: user.profile });
 }
 
 export async function PUT(req: NextRequest) {
-  const user = resolveSession(req.cookies.get("acn_session")?.value);
+  const user = await resolveSession(req.cookies.get("acn_session")?.value);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const existing = user.profile;
@@ -30,6 +30,6 @@ export async function PUT(req: NextRequest) {
     language: body.language ?? existing?.language ?? "en",
     createdAt: existing?.createdAt ?? new Date().toISOString(),
   };
-  updateProfile(user.id, profile);
+  await updateProfile(user.id, profile);
   return NextResponse.json({ profile });
 }

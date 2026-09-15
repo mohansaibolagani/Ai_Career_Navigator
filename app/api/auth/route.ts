@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 const COOKIE = "acn_session";
 
 async function me(req: NextRequest) {
-  const user = resolveSession(req.cookies.get(COOKIE)?.value);
+  const user = await resolveSession(req.cookies.get(COOKIE)?.value);
   if (!user) return NextResponse.json({ user: null });
   return NextResponse.json({ user: { id: user.id, email: user.email, name: user.name, profile: user.profile } });
 }
@@ -35,17 +35,17 @@ export async function POST(req: NextRequest) {
       if (String(password).length < 6) {
         return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
       }
-      const user = createUser(String(email), String(name), String(password));
-      const token = createSession(user.id);
+      const user = await createUser(String(email), String(name), String(password));
+      const token = await createSession(user.id);
       const res = NextResponse.json({ user: { id: user.id, email: user.email, name: user.name, profile: user.profile } });
       res.cookies.set(COOKIE, token, { httpOnly: true, sameSite: "lax", path: "/" });
       return res;
     }
 
     if (action === "login") {
-      const user = verifyUser(String(body.email ?? ""), String(body.password ?? ""));
+      const user = await verifyUser(String(body.email ?? ""), String(body.password ?? ""));
       if (!user) return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-      const token = createSession(user.id);
+      const token = await createSession(user.id);
       const res = NextResponse.json({ user: { id: user.id, email: user.email, name: user.name, profile: user.profile } });
       res.cookies.set(COOKIE, token, { httpOnly: true, sameSite: "lax", path: "/" });
       return res;
@@ -54,15 +54,15 @@ export async function POST(req: NextRequest) {
     if (action === "demo") {
       // Instant demo: local account seeded with the sample student
       const email = "ananya.sharma@demo.edu";
-      let user = verifyUser(email, "demo1234");
+      let user = await verifyUser(email, "demo1234");
       if (!user) {
-        user = createUser(email, "Ananya Sharma", "demo1234");
+        user = await createUser(email, "Ananya Sharma", "demo1234");
       }
       if (!user.profile) {
-        updateProfile(user.id, buildDemoProfile());
-        user = verifyUser(email, "demo1234")!;
+        await updateProfile(user.id, buildDemoProfile());
+        user = (await verifyUser(email, "demo1234"))!;
       }
-      const token = createSession(user.id);
+      const token = await createSession(user.id);
       const res = NextResponse.json({ user: { id: user.id, email: user.email, name: user.name, profile: user.profile } });
       res.cookies.set(COOKIE, token, { httpOnly: true, sameSite: "lax", path: "/" });
       return res;

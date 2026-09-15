@@ -1,0 +1,45 @@
+# Render Blueprint — AI Career Navigator
+# Deploy: Render Dashboard → New → Blueprint → pick this repo (or render CLI).
+services:
+  - type: web
+    name: ai-career-navigator
+    runtime: node
+    plan: free
+    region: singapore # closest free region for India; change if you prefer
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      # --- AI (optional; app works fully without these) ---
+      - key: OPENAI_API_KEY
+        sync: false # set in Render dashboard if you want real LLM coach/resume grading
+      - key: OPENAI_BASE_URL
+        value: https://api.openai.com/v1
+      # --- Google OAuth (optional) ---
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      # Add your Render URL redirect in Google Console, e.g.
+      # https://ai-career-navigator.onrender.com/api/auth/google/callback
+      # --- Google demo sign-in (optional) ---
+      - key: GOOGLE_DEMO_EMAIL
+        sync: false
+      - key: GOOGLE_DEMO_NAME
+        sync: false
+      - key: GOOGLE_DEMO_SEED_PROFILE
+        value: "1"
+      - key: NEXT_PUBLIC_GOOGLE_DEMO
+        value: "1"
+      # --- Storage: strongly recommended on Render free tier ---
+      # Free instances restart and lose their local disk. Point this at a
+      # free Upstash Redis to keep accounts between restarts.
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      # Without Upstash, storage lives on the instance disk (resets on restart):
+      - key: DATA_DIR
+        value: /var/data

@@ -69,12 +69,41 @@ same callback/session flow without leaving the server.
 password account links them automatically; the reverse (password signup with a
 Google-registered email) shows a friendly "use Continue with Google" message.
 
+## Deploy
+
+### Vercel (recommended for Next.js)
+
+1. Push the repo to GitHub (done — see above)
+2. [vercel.com/new](https://vercel.com/new) → import `Ai_Career_Navigator` → Deploy
+   (framework auto-detected, no build settings needed)
+3. Add env vars in **Project → Settings → Environment Variables**:
+   - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` — **required for real
+     accounts** (serverless has no disk; free at [upstash.com](https://upstash.com))
+   - `OPENAI_API_KEY` (optional — enables real LLM coach/resume grading)
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (optional) — add
+     `https://YOUR-APP.vercel.app/api/auth/google/callback` as an authorized
+     redirect URI in Google Console
+4. Redeploy after adding vars. Demo mode works out of the box.
+
+### Render
+
+A `render.yaml` blueprint is included: Render Dashboard → **New → Blueprint** →
+pick the repo → Apply. Point `DATA_DIR` at a Render disk (or set the Upstash
+vars) because free instances lose their disk on restart.
+
+### Storage notes
+
+- Local dev: JSON files in `./data` — zero setup
+- Vercel / Render free: set the Upstash Redis vars (free tier) so accounts persist
+- `server/storage.ts` is the single swap point for a real database later
+
 ## Tech
 
 - Next.js 14 (App Router) + TypeScript + Tailwind
 - API routes as the backend (`/api/auth`, `/api/profile`, `/api/matches`,
   `/api/coach`, `/api/resume`) — AI keys stay server-side
-- JSON file storage (`data/`) — swap `server/auth.ts` for NextAuth + a DB in production
+- Pluggable storage (`server/storage.ts`): local JSON files, or Upstash Redis
+  in serverless — swap for a real DB in production
 
 ## Demo student
 
