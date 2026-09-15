@@ -69,6 +69,12 @@ same callback/session flow without leaving the server.
 password account links them automatically; the reverse (password signup with a
 Google-registered email) shows a friendly "use Continue with Google" message.
 
+## Live deployments
+
+- **Vercel:** https://ai-career-navigator-nine.vercel.app
+- **Render:** https://ai-career-navigator-ok1m.onrender.com (free tier — first
+  request after ~15 min idle may take ~50s while the instance spins up)
+
 ## Deploy
 
 ### Vercel (recommended for Next.js)
