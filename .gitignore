@@ -26,3 +26,5 @@ data/
 
 .vercel
 .env*
+
+vercel.json.bak
